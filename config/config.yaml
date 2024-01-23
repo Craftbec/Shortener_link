@@ -1,0 +1,10 @@
+http:
+  port: 8080
+grcp:
+  port: 9090
+postgres:
+  host: "host.docker.internal"
+  user: "postgres"
+  password: "postgres"
+  dbname: "postgres"
+  port: 5432

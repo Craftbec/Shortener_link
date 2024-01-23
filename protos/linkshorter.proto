@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package linkShorter;
+
+option go_package="github.com/Craftbec/Shortener_link/internal/linkshorter_v1;linkshorter_v1";
+
+
+service Shortener {
+    rpc Post(OriginalLink) returns (ShortLink);
+    rpc Get(ShortLink) returns (OriginalLink);
+}
+
+message OriginalLink{
+    string link = 1;
+}
+
+message ShortLink {
+    string link = 1;
+}
