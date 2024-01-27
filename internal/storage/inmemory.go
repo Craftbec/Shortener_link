@@ -7,6 +7,13 @@ import (
 	"github.com/Craftbec/Shortener_link/internal/errors"
 )
 
+type Storage interface {
+	Get(ctx context.Context, short string) (string, error)
+	Post(ctx context.Context, original string, short string) error
+	CheckPost(ctx context.Context, original string) (string, error)
+	GracefulStopDB()
+}
+
 type InMemory struct {
 	mu           sync.RWMutex
 	originalLink map[string]string

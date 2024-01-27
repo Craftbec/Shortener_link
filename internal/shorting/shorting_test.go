@@ -9,12 +9,12 @@ func TestGenerateShortLinkLength(t *testing.T) {
 	shortLink := GenerateShortLink()
 	shortLink2 := GenerateShortLink()
 	if len(shortLink) != Size || len(shortLink2) != Size {
-		t.Errorf("Invalid short link length")
+		t.Error("Invalid short link length\n")
 	}
 	if shortLink == shortLink2 {
-		t.Errorf("Short links are not generated randomly")
+		t.Error("Short links are not generated randomly\n")
 	}
 	if len(strings.Trim(shortLink, Alphabet)) != 0 {
-		t.Errorf("Short link contains invalid characters")
+		t.Error("Short link contains invalid characters\n")
 	}
 }

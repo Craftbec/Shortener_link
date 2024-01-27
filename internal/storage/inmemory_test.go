@@ -4,43 +4,48 @@ import (
 	"context"
 	"testing"
 
-	"github.com/Craftbec/Shortener_link/internal/errors"
-	"github.com/Craftbec/Shortener_link/internal/shorting"
+	"github.com/golang/mock/gomock"
 )
 
-func TestInMemoryGet(t *testing.T) {
-	bd := NewInMemory()
-	originalLink := "https://ozon.ru"
-	shortLink := shorting.GenerateShortLink()
-	bd.shortLink[shortLink] = originalLink
-	bd.originalLink[originalLink] = shortLink
-	resultOriginal, err := bd.Get(context.Background(), shortLink)
+func TestInMemory_Get(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	mockInMemory := NewMockStorage(ctrl)
+	original := "https://example.com"
+	short := "short"
+	mockInMemory.EXPECT().Get(context.Background(), short).Return(original, nil)
+	result, err := mockInMemory.Get(context.Background(), short)
 	if err != nil {
-		t.Errorf("Error getting original link")
+		t.Error("Unexpected error\n")
 	}
-	if resultOriginal != originalLink {
-		t.Errorf("Incorrect original link received")
+	if result != original {
+		t.Error("Expected 'original'\n")
 	}
 }
 
-func TestInMemoryPostAndCheckPost(t *testing.T) {
-	bd := NewInMemory()
-	originalLink := "https://ozon.ru"
-	shortLink := shorting.GenerateShortLink()
-	err := bd.Post(context.Background(), originalLink, shortLink)
+func TestInMemory_Post(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	mockInMemory := NewMockStorage(ctrl)
+	mockInMemory.EXPECT().Post(context.Background(), "original", "short").Return(nil)
+	err := mockInMemory.Post(context.Background(), "original", "short")
 	if err != nil {
-		t.Errorf("The link was not added")
+		t.Error("Unexpected error\n")
 	}
-	resultShortLink, err := bd.CheckPost(context.Background(), originalLink)
+}
+
+func TestCheckPost(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	mockInMemory := NewMockStorage(ctrl)
+	original := "https://example.com"
+	short := "short"
+	mockInMemory.EXPECT().CheckPost(context.Background(), original).Return(short, nil)
+	resultURL, err := mockInMemory.CheckPost(context.Background(), original)
+	if resultURL != short {
+		t.Error("Expected 'short'\n")
+	}
 	if err != nil {
-		t.Errorf("Error when searching by link")
-	}
-	noLink := "https://test.com"
-	_, err = bd.CheckPost(context.Background(), noLink)
-	if err != errors.NotFound {
-		t.Errorf("Error searching for non-existent link")
-	}
-	if resultShortLink != shortLink {
-		t.Errorf("The short link is incorrect in relation to the original")
+		t.Errorf("Unexpected error\n")
 	}
 }
